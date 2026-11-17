@@ -1,0 +1,15 @@
+origen,destino,costo
+Bogota,Villavicencio,90
+Bogota,Ibague,20
+Ibague,Villavicencio,25
+Bogota,Medellin,50
+Medellin,Pereira,30
+Pereira,Manizales,15
+Manizales,Ibague,25
+Bogota,Cali,60
+Cali,Ibague,40
+Bogota,Bucaramanga,70
+Bucaramanga,Medellin,65
+Bucaramanga,Barranquilla,80
+Medellin,Barranquilla,110
+Cartagena,Santa Marta,30
