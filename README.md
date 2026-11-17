@@ -9,156 +9,204 @@
 ## 1. Información General y Equipo de Trabajo
 
 * **Materia:** Estructura de Datos
-* **Fecha:** Noviembre de 2026
-* **Lenguaje:** C++ (Estándar C++11 o superior)
+* **Fecha de Entrega:** Noviembre de 2026
+* **Lenguaje:** C++ (Estándar C++17)
 * **Entorno:** Consola multiplataforma (Windows / Linux / macOS)
 * **Integrantes del Equipo:**
-  - **Jerónimo Martínez Daza** - *Desarrollo de Estructuras de Datos, Algoritmos y Pruebas*
+  - **Jerónimo Martínez Daza** - *Responsable de Modelado de Grafos, Algoritmos (BFS/DFS/Dijkstra), Pruebas y Documentación*
 
 ---
 
-## 2. Descripción del Problema y Objetivos
+## 2. Estructura del Repositorio
 
-Una red vial conecta distintas ciudades de Colombia mediante carreteras y trayectos. En la toma de decisiones sobre transporte y logística se requiere modelar la red para responder tres interrogantes fundamentales:
-
-1. **¿Se puede llegar? (Conectividad / Alcanzabilidad):**  
-   Determinar si existe al menos una secuencia de carreteras entre una ciudad de origen y una de destino.
-2. **¿Cómo explorarlas? (Recorridos ordenados):**  
-   Explorar exhaustivamente la red registrando las ciudades visitadas, ya sea por niveles de cercanía o avanzando en profundidad.
-3. **¿Cuál conviene? (Optimización):**  
-   Encontrar la ruta que minimice el costo acumulado (distancia estimada, tiempo o peajes con pesos no negativos).
-
----
-
-## 3. Modelo de Datos y Estructuras Elegidas
-
-El problema se modela matemáticamente como un **Grafo Ponderado $G = (V, E)$**:
-* **Vértices ($V$):** Ciudades de Colombia (p. ej., Bogotá, Medellín, Cali, Ibagué, Villavicencio, etc.).
-* **Aristas ($E$):** Conexiones o carreteras directas entre ciudades.
-* **Pesos ($w$):** Costo, tiempo o distancia asociada al trayecto (pesos no negativos $w \ge 0$).
-
-### Estructura de Datos: Lista de Adyacencia
-En C++ se implementa mediante un mapa asociativo de vectores de aristas:
-```cpp
-struct Arista {
-    std::string destino;
-    double costo;
-};
-
-std::map<std::string, std::vector<Arista>> adyacencia;
-```
-
-**Justificación técnica:**
-* Frente a una **Matriz de Adyacencia** ($O(V^2)$ en memoria), la **Lista de Adyacencia** aprovecha que las redes de carreteras son **grafos dispersos** ($|E| \ll |V|^2$), requiriendo únicamente $O(V + E)$ de memoria.
-* Permite agregar dinámicamente nuevas ciudades y rutas sin redimensionar matrices.
-
----
-
-## 4. Algoritmos Implementados
-
-| Algoritmo | Estructura Clave | Pregunta que Responde | Garantía de Optimalidad | Complejidad Temporal | Complejidad Espacial |
-| :--- | :--- | :--- | :--- | :---: | :---: |
-| **BFS** (Breadth-First Search) | Cola FIFO (`std::queue`) | ¿Cómo explorar nivel por nivel? ¿Cuál es el camino con **menos saltos**? | Óptimo en cantidad de aristas (grafos no ponderados) | $O(V + E)$ | $O(V)$ |
-| **DFS** (Depth-First Search) | Pila LIFO (`std::stack`) | ¿Hasta dónde puedo avanzar explorando una rama hasta el fondo? | No asegura camino óptimo ni en saltos ni en costo | $O(V + E)$ | $O(V)$ |
-| **Dijkstra** | Cola de Prioridad / Min-Heap (`std::priority_queue`) | ¿Cuál es la ruta con la **menor suma de costos**? | Óptimo con costos no negativos ($w \ge 0$) | $O((V + E) \log V)$ | $O(V)$ |
-
----
-
-## 5. El Dilema Fundamental: "Menos Saltos $\ne$ Menor Costo"
-
-Un aspecto central del proyecto (destacado en la diapositiva 05 del taller) es comprender por qué **BFS y Dijkstra resuelven problemas distintos**:
-
-```mermaid
-graph LR
-    Bogota((Bogotá)) -- "Salto directo: Costo = 90" --> Villavicencio((Villavicencio))
-    Bogota((Bogotá)) -- "Costo = 20" --> Ibague((Ibagué))
-    Ibague((Ibagué)) -- "Costo = 25" --> Villavicencio((Villavicencio))
-```
-
-* **Resultado con BFS (Mínimos saltos):**  
-  Ruta: `Bogotá -> Villavicencio`  
-  Saltos: **1 salto**  
-  Costo total: **90**
-* **Resultado con Dijkstra (Costo mínimo):**  
-  Ruta: `Bogotá -> Ibagué -> Villavicencio`  
-  Saltos: **2 saltos**  
-  Costo total: $20 + 25 =$ **45**
-
-**Conclusión:**  
-* BFS optimiza la cantidad de bordes atravesados, asumiendo que todas las aristas tienen el mismo peso.
-* Dijkstra considera el peso real acumulado. Por ello, una ruta con más tramos intermedios puede ser significativamente más económica que un trayecto directo.
-
----
-
-## 6. Funcionalidades del Menú de Consola
-
-Al ejecutar el programa se presenta el menú interactivo con validación de entradas:
+El proyecto cumple con la organización en carpetas requerida para la entrega:
 
 ```text
-======= SISTEMA DE RUTAS =======
-1. Mostrar ciudades y conexiones (Lista de Adyacencia)
-2. Recorrido BFS (Búsqueda en Anchura / Exploración)
-3. Recorrido DFS (Búsqueda en Profundidad)
-4. Ruta de costo mínimo (Dijkstra)
-5. Consultar si existe una ruta (Alcanzabilidad)
-6. Comparar BFS vs Dijkstra (Demostración Diapositiva 05)
-7. Agregar nueva conexión / ciudad a la red
-0. Salir
-Seleccione una opción: _
+rutas-colombia/
+├── src/
+│   └── main.cpp           # Código fuente modular en C++
+├── .gitignore             # Exclusión de ejecutables y temporales de compilación
+├── README.md              # Documentación técnica, diagramas, pruebas y sustentación
+├── rutas.csv              # Topología de la red vial nacional (vértices, aristas, costos)
+└── rutas_colombia.exe     # Archivo binario ejecutable
 ```
-
-### Casos de Prueba y Casos Límite Soportados
-1. **Red estándar:** Más de 9 ciudades principales interconectadas de Colombia (Bogotá, Medellín, Cali, Ibagué, Pereira, Manizales, Bucaramanga, Barranquilla, Villavicencio).
-2. **Ciudades desconectadas / Islas:** Cartagena y Santa Marta están configuradas en una componente aislada, permitiendo verificar que la opción 5 y Dijkstra reporten apropiadamente *"No existe ruta disponible"* cuando no hay camino.
-3. **Validación de errores:** Ciudades inexistentes o mal digitadas, costos negativos rechazados, y cadenas vacías.
-4. **Carga desde archivo:** Soporta archivo `rutas.csv` en formato `origen,destino,costo`.
 
 ---
 
-## 7. Instrucciones de Compilación y Ejecución
+## 3. Diagrama Modular del Sistema
 
-### Requisitos
-* Compilador C++ compatible con C++11 o superior (`g++`, `clang++`, o MSVC en Visual Studio).
+El software sigue una arquitectura modular en capas desacopladas:
 
-### Compilación con GCC / G++ (MinGW o Linux):
-```bash
-g++ -std=c++17 -Wall main.cpp -o rutas_colombia
-./rutas_colombia
+```mermaid
+graph TD
+    UI["🖥️ MÓDULO INTERFAZ DE USUARIO<br>(Menú interactivo, lectura segura y validaciones)"]
+    CONTROL["⚙️ MÓDULO CONTROLADOR<br>(Clase GrafoRutas)"]
+    
+    subgraph ALGORITMOS ["🧠 MÓDULO DE ALGORITMOS"]
+        BFS["BFS (Búsqueda en Anchura)<br>• Exploración por niveles<br>• Menor número de saltos"]
+        DFS["DFS (Búsqueda en Profundidad)<br>• Exploración profunda<br>• Alcanzabilidad de nodos"]
+        DIJKSTRA["Dijkstra (Costo Mínimo)<br>• Min-Heap / Cola de Prioridad<br>• Pesos no negativos"]
+    end
+
+    subgraph ESTRUCTURAS ["📦 MÓDULO DE ESTRUCTURAS DE DATOS"]
+        ADJ["Lista de Adyacencia<br>std::map&lt;string, vector&lt;Arista&gt;&gt;"]
+        COLA["Cola FIFO<br>std::queue&lt;string&gt;"]
+        PILA["Pila LIFO<br>std::stack&lt;string&gt;"]
+        HEAP["Cola de Prioridad (Min-Heap)<br>std::priority_queue"]
+        SET["Conjuntos Visitados<br>std::set&lt;string&gt;"]
+    end
+
+    subgraph PERSISTENCIA ["💾 MÓDULO DE PERSISTENCIA"]
+        CSV["Lector de Topología CSV<br>(rutas.csv / Formato origen,destino,costo)"]
+    end
+
+    UI --> CONTROL
+    CONTROL --> ALGORITMOS
+    ALGORITMOS --> ESTRUCTURAS
+    CONTROL --> PERSISTENCIA
 ```
 
-### Compilación en Windows (PowerShell / CMD):
+---
+
+## 4. Tabla de Estructuras de Datos
+
+| Operación del Sistema | Estructura Usada en C++ | Justificación Técnica de la Elección | Complejidad |
+| :--- | :--- | :--- | :---: |
+| **Almacenamiento de la Red (Vértices y Aristas)** | `std::map<std::string, std::vector<Arista>>` (Lista de Adyacencia) | Las redes viales son **grafos dispersos** ($|E| \ll |V|^2$). La lista de adyacencia optimiza la memoria a $O(V + E)$ en lugar de $O(V^2)$ de una matriz. El `std::map` mantiene las ciudades ordenadas alfabéticamente para una visualización clara. | **Espacio:** $O(V + E)$<br>**Búsqueda:** $O(\log V)$ |
+| **Recorrido en Anchura (BFS)** | `std::queue<std::string>` (Cola FIFO) | Garantiza la exploración ordenada en "anillos concéntricos" nivel a nivel, permitiendo hallar el camino con el **menor número de aristas/saltos**. | **Tiempo:** $O(V + E)$<br>**Espacio:** $O(V)$ |
+| **Recorrido en Profundidad (DFS)** | `std::stack<std::string>` (Pila LIFO) | Permite profundizar de forma exhaustiva por una rama vial hasta un nodo hoja o ciclo antes de realizar retroceso (*backtracking*). | **Tiempo:** $O(V + E)$<br>**Espacio:** $O(V)$ |
+| **Control de Nodos Visitados** | `std::set<std::string>` (Árbol Rojo-Negro) | Evita ciclos infinitos en el grafo y duplicados al procesar ciudades con búsqueda e inserción balanceada en tiempo logarítmico. | **Inserción:** $O(\log V)$<br>**Búsqueda:** $O(\log V)$ |
+| **Optimización de Costo Mínimo (Dijkstra)** | `std::priority_queue<Par, vector<Par>, greater<Par>>` (Min-Heap) | Permite extraer siempre en $O(\log V)$ el nodo con la menor distancia acumulada provisional, reduciendo drásticamente la complejidad frente a una búsqueda lineal $O(V)$. | **Tiempo:** $O((V + E) \log V)$<br>**Espacio:** $O(V)$ |
+| **Reconstrucción del Camino Óptimo** | `std::map<std::string, std::string>` (Mapa de Predecesores) | Permite rastrear la ruta óptima desde el destino hacia el origen en tiempo proporcional a los saltos de la ruta ($O(\text{saltos})$). | **Espacio:** $O(V)$ |
+
+---
+
+## 5. Instrucciones de Compilación y Ejecución
+
+### Requisitos
+* Compilador de C++ con soporte C++17 (GCC / g++, Clang, o MSVC).
+
+### Compilación desde la raíz del proyecto:
 ```powershell
-g++ -std=c++17 main.cpp -o rutas_colombia.exe
+g++ -std=c++17 src/main.cpp -o rutas_colombia.exe
+```
+
+### Ejecución:
+```powershell
 .\rutas_colombia.exe
 ```
 
-### Compilación con Clang:
-```bash
-clang++ -std=c++17 main.cpp -o rutas_colombia
-./rutas_colombia
+---
+
+## 6. Registro de Ejecución de Pruebas (Evidencias de Casos Controlados)
+
+Se ejecutaron pruebas exhaustivas que incluyen caminos exitosos, demostración conceptual y **dos entradas inválidas obligatorias**:
+
+### ✅ PRUEBA 1: Ruta de Costo Mínimo (Dijkstra) — Válida
+* **Objetivo:** Encontrar la ruta más económica entre dos ciudades del interior.
+* **Entrada:** Opción `4` $\rightarrow$ Origen: `Bogota`, Destino: `Cali`.
+* **Registro de Salida:**
+```text
+=======================================================
+  RUTA ÓPTIMA ENCONTRADA:
+  Bogota  ──>  Cali
+-------------------------------------------------------
+  Cantidad de tramos (aristas): 1
+  Costo total acumulado:        60.00 unidades
+=======================================================
 ```
 
 ---
 
-## 8. Preguntas Clave para la Sustentación (10 pts de Rúbrica)
+### ✅ PRUEBA 2: Demostración Diapositiva 05 ("Menos Saltos $\ne$ Menor Costo") — Válida
+* **Objetivo:** Demostrar que el camino con menos aristas (BFS) no siempre es el más económico (Dijkstra).
+* **Entrada:** Opción `6` $\rightarrow$ Origen: `Bogota`, Destino: `Villavicencio`.
+* **Registro de Salida:**
+```text
+=======================================================
+  COMPARACIÓN CONCEPTUAL: MENOS SALTOS vs MENOR COSTO   
+  Origen: Bogota  --->  Destino: Villavicencio
+=======================================================
 
-1. **¿Por qué usarías BFS en un caso y Dijkstra en otro?**  
-   * **BFS** se utiliza cuando todos los tramos tienen el mismo costo (o cuando el objetivo es minimizar escalas / saltos, por ejemplo en vuelos directos sin importar la distancia).
-   * **Dijkstra** se utiliza cuando los tramos tienen pesos heterogéneos no negativos y el objetivo es minimizar el costo acumulado (combustible, peajes, kilómetros).
+ [1] RESULTADO POR BFS (Menor cantidad de saltos / aristas):
+     Ruta: Bogota -> Villavicencio
+     Saltos (aristas): 1
+     Costo total:      90.0
 
-2. **¿Qué sucede si una arista tiene un costo negativo en Dijkstra?**  
-   Dijkstra es un algoritmo voraz (*greedy*) que asume que una vez un nodo es extraído del heap con su menor distancia estimada, su costo óptimo no puede reducirse más. Si existen aristas negativas, esta premisa se rompe y puede dar resultados erróneos o caer en ciclos infinitos; para aristas negativas se requeriría el algoritmo de **Bellman-Ford**.
+ [2] RESULTADO POR DIJKSTRA (Menor suma ponderada de pesos):
+     Ruta óptima: Bogota -> Ibague -> Villavicencio
+     Saltos (aristas): 2
+     Costo total:      45.0
 
-3. **¿Cuál es la diferencia en el orden de exploración entre BFS y DFS?**  
-   * BFS utiliza una **cola FIFO** y explora en "anillos concéntricos" (todos los vecinos directos a distancia 1, luego distancia 2, etc.).
-   * DFS utiliza una **pila LIFO** o recursión y se adentra hasta el fondo de un camino antes de retroceder (*backtracking*).
+ [3] CONCLUSIÓN TEÓRICA:
+     ¡Se comprueba la premisa: 'Menos saltos != Menor costo'!
+     BFS eligió un trayecto con 1 salto(s) pero costo 90.0.
+     Dijkstra encontró una ruta más económica con costo 45.0 utilizando 2 saltos.
+=======================================================
+```
 
 ---
 
-## 9. Registro de Commits y Etapas del Proyecto
+### ❌ PRUEBA 3: Entrada Inválida 1 — Ciudad Inexistente en la Red
+* **Objetivo:** Verificar la robustez del sistema ante nombres mal digitados o ciudades inexistentes.
+* **Entrada:** Opción `4` $\rightarrow$ Origen: `Bogota`, Destino: `Wakanda`.
+* **Registro de Salida:**
+```text
+Ingrese la ciudad de ORIGEN: Bogota
+Ingrese la ciudad de DESTINO: Wakanda
 
-* **Commit 1:** `chore: estructura inicial del proyecto, README y configuración de gitignore`
-* **Commit 2:** `feat: implementación del modelo de grafo con lista de adyacencia y menú base`
-* **Commit 3:** `feat: integración de algoritmos de exploración BFS y DFS con validación de alcanzabilidad`
-* **Commit 4:** `feat: implementación de algoritmo de Dijkstra con cola de prioridad y comparativa educativa`
-* **Commit 5:** `test: casos de prueba controlados, soporte para rutas.csv y manejo de grafos desconectados`
+ [Error] Verifique los nombres: una o ambas ciudades no existen.
+Presione ENTER para continuar...
+```
+
+---
+
+### ❌ PRUEBA 4: Entrada Inválida 2 — Opción Fuera de Rango o No Numérica
+* **Objetivo:** Verificar que el menú principal rechace opciones no válidas sin colapsar el programa.
+* **Entrada:** `Seleccione una opción: 99` (o texto `abc`).
+* **Registro de Salida:**
+```text
+Seleccione una opción: 99
+
+ [Opción inválida] Por favor ingrese un número del menú.
+Presione ENTER para continuar...
+```
+
+---
+
+### ⚠️ PRUEBA 5 (Bonus): Manejo de Componentes Desconectadas (Grafos Aislados)
+* **Objetivo:** Consultar ruta entre dos ciudades que pertenecen a islas desconectadas.
+* **Entrada:** Opción `4` $\rightarrow$ Origen: `Bogota`, Destino: `Cartagena`.
+* **Registro de Salida:**
+```text
+ [Resultado] NO EXISTE NINGUNA RUTA viable entre Bogota y Cartagena.
+ (Las ciudades pertenecen a componentes desconectadas del grafo).
+```
+
+---
+
+## 7. Lista de Funcionalidades: Terminadas vs. Pendientes
+
+| # | Funcionalidad | Estado | Responsable | Observaciones / Entrega |
+| :-: | :--- | :---: | :---: | :--- |
+| **1** | Modelado de grafo con Lista de Adyacencia | **Terminado (100%)** | Jerónimo Martínez Daza | Estructura dinámica en C++ con vértices y aristas ponderadas. |
+| **2** | Recorrido BFS (Anchura) y cálculo de menos saltos | **Terminado (100%)** | Jerónimo Martínez Daza | Implementado con `std::queue` y detección de visitados. |
+| **3** | Recorrido DFS (Profundidad) | **Terminado (100%)** | Jerónimo Martínez Daza | Implementado con `std::stack` para exploración exhaustiva. |
+| **4** | Algoritmo de Dijkstra para rutas de costo mínimo | **Terminado (100%)** | Jerónimo Martínez Daza | Optimizado con Min-Heap (`std::priority_queue`). |
+| **5** | Consulta de alcanzabilidad (¿Se puede llegar?) | **Terminado (100%)** | Jerónimo Martínez Daza | Responde con validación booleana clara en $O(V + E)$. |
+| **6** | Demostración comparativa (Diapositiva 05) | **Terminado (100%)** | Jerónimo Martínez Daza | Caso Bogotá - Villavicencio con análisis automatizado. |
+| **7** | Inserción dinámica de nuevas ciudades y conexiones | **Terminado (100%)** | Jerónimo Martínez Daza | Permite enriquecer el grafo en tiempo de ejecución. |
+| **8** | Carga automática de topología desde archivo CSV | **Terminado (100%)** | Jerónimo Martínez Daza | Lee `rutas.csv` al iniciar la aplicación. |
+| **9** | Manejo de entradas inválidas y errores de usuario | **Terminado (100%)** | Jerónimo Martínez Daza | Validaciones contra cadenas vacías, costos negativos y ciudades inexistentes. |
+| **10** | Exportación visual a formato gráfico (Graphviz / DOT) | **Pendiente (Etapa 2)** | Jerónimo Martínez Daza | Programado para la entrega final del proyecto. |
+| **11** | Búsqueda por autocompletado de ciudades | **Pendiente (Etapa 2)** | Jerónimo Martínez Daza | Mejora opcional para la sustentación. |
+
+---
+
+## 8. Sustentación Teórica: Preguntas Clave del Docente
+
+1. **¿Por qué usarías BFS en un caso y Dijkstra en otro?**  
+   * **BFS** es óptimo cuando todas las aristas tienen el mismo peso (o no tienen peso), minimizando el **número de saltos o transferencias**.
+   * **Dijkstra** es el algoritmo adecuado cuando las conexiones tienen **pesos no negativos heterogéneos** (tiempo, distancia, costo de peajes), minimizando la suma total acumulada.
+2. **¿Por qué Dijkstra no soporta pesos negativos?**  
+   * Porque Dijkstra asume con criterio voraz (*greedy*) que una vez un nodo es extraído del heap con su menor costo provisional, su distancia definitiva está resuelta. Una arista negativa posterior violaría esta premisa. Para aristas negativas se debe emplear **Bellman-Ford**.
