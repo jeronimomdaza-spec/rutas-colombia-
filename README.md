@@ -13,9 +13,7 @@
 * **Lenguaje:** C++ (Estándar C++11 o superior)
 * **Entorno:** Consola multiplataforma (Windows / Linux / macOS)
 * **Integrantes del Equipo:**
-  - *[Nombre del Estudiante 1]* - *Rol: Diseño de Estructuras de Datos y Modelo de Grafo*
-  - *[Nombre del Estudiante 2]* - *Rol: Implementación de Algoritmos (BFS, DFS, Dijkstra)*
-  - *[Nombre del Estudiante 3]* - *Rol: Pruebas, Casos Límite y Documentación*
+  - **Jerónimo Martínez Daza** - *Desarrollo de Estructuras de Datos, Algoritmos y Pruebas*
 
 ---
 
