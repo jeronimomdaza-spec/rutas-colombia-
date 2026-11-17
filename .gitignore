@@ -1,0 +1,24 @@
+# Compilados y binarios
+*.exe
+*.out
+*.app
+*.o
+*.obj
+
+# Directorios de compilación
+build/
+bin/
+out/
+
+# IDEs y editores
+.vscode/
+.vs/
+*.sln
+*.vcxproj*
+.idea/
+*.user
+
+# Archivos temporales del sistema
+Thumbs.db
+Desktop.ini
+.DS_Store
